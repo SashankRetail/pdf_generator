@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GSEcommerce/pdfegenerator.git"
+    "url": "https://gitlab.com/design-cafe/design_cafe_cd-dd"
   },
   "keywords": [],
-  "author": "DesignCafe",
+  "author": "Retail Insights",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/GSEcommerce/pdfegenerator/issues"
+    "url": "https://gitlab.com/design-cafe/design_cafe_cd-dd/issues"
   },
-  "homepage": "https://github.com/GSEcommerce/pdfegenerator#readme",
+  "homepage": "https://gitlab.com/design-cafe/design_cafe_cd-dd#readme",
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "aws-sdk": "^2.1154.0",
