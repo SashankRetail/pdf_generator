@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /* body {
+      background-color: powderblue;
+    } */
+
+    .heading-title {
+      /* color: blue; */
+      font-size: 90px;
+      margin: 0;
+    }
+
+    .heading-sub {
+      font-size: 30px;
+      font-weight: 900;
+      color: rgb(36, 156, 156);
+      margin-bottom: 30px;
+      margin-top: 30px;
+    }
+
+    thead {
+      display: table-header-group;
+      break-inside: avoid;
+      /* border: 1px solid black; */
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .sub-container {
+      margin-left: 10px;
+      margin-right: 10px;
+      page-break-after: always;
+    }
+
+    .project-info {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /* margin-top: 1em; */
+      width: 100%;
+      height: 100%;
+    }
+
+    .general-info {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .customer-info {
+      display: flex;
+      /* justify-content: space-between; */
+    }
+
+    .company-info {
+      display: flex;
+      margin-right: 5em;
+    }
+
+    .row {
+      display: flex;
+      text-align: center;
+    }
+
+    .room-component {
+      background-color: gray;
+    }
+
+    .title {
+      font-weight: bold;
+    }
+
+    .summary-table {
+      margin-top: 3em;
+    }
+
+    table {
+      border-collapse: collapse;
+      /* border-spacing: 0 0; */
+      /* -webkit-border-vertical-spacing: 0; */
+      width: 100%;
+      /* height: 100%;
+      min-height: 198mm !important;
+      position: relative;
+      table-layout: fixed;
+      page-break-inside: always; */
+    }
+
+    th {
+      background-color: gray;
+    }
+
+    tr {
+      text-align: left;
+      page-break-inside: avoid;
+      page-break-after: auto
+    }
+
+    /* 
+    td{
+      padding:5px;
+      page-break-inside: avoid;
+      page-break-after: auto
+    } */
+    .heading-pos {
+      width: 3em;
+    }
+
+    .heading-qty {
+      width: 5em;
+    }
+
+    .heading-price {
+      width: 6em;
+    }
+
+    .heading-sum {
+      width: 6em;
+
+    }
+
+    .rooms-component {
+      vertical-align: top;
+    }
+
+    .table-data {
+      border: solid;
+      border-width: 1px 0;
+      height: 100%;
+      text-align: left;
+    }
+
+    .table-total {
+      display: flex;
+      justify-content: flex-end;
+      /* width:30%; */
+    }
+
+    .title-value {
+      margin-left: 5em;
+    }
+
+    .title-val-genInfo {
+      margin-left: 1em;
+    }
+
+    hr {
+      border: 1px solid lightgrey;
+    }
+
+    hr:last-child {
+      border: 1px solid black;
+    }
+
+    .component-image {
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+
+    .room-summary {
+      margin-top: 5em;
+    }
+
+    .room-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: rgb(15, 76, 85)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sub-container">
+      <section>
+        <h1 class="heading-title">HOME</h1>
+        <h1 class="heading-title">INTERIORS</h1>
+        <h1 class="heading-title">ESTIMATE</h1>
+        <div class="project-info">
+          <div>
+            <p>Proposal Date:</p>
+            <p>{{DATES.proposalDate}}</p>
+          </div>
+          <div>
+            <p>Expiry Date:</p>
+            <p>{{DATES.expiryDate}}</p>
+          </div>
+          <div>
+            <p>Project ID:</p>
+            <p>{{clientOrProjectName}}</p>
+          </div>
+        </div>
+
+      </section>
+    </div>
+    <div class="sub-container">
+      <section>
+        <div class="heading">
+          <img src="https://test-designcafe.s3.ap-south-1.amazonaws.com/pdf-images/completedIcon.png" width="50"
+            height="50" alt="completed" />
+          <h2>GENERAL INFORMATION</h2>
+        </div>
+        <div class="general-info">
+          <div>
+            <h4>Customer</h4>
+            <div class="customer-info">
+              <div class="left">
+                <p class="title">Name:</p>
+                <p class="title">Date:</p>
+                <p class="title">Address:</p>
+              </div>
+              <div class="right">
+                <p class="title-val-genInfo">{{#parsedData PARSE_XML.XML.Order.Head.CONTACT_ADDRESS1._text}}
+                  {{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS1._text}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+                <p class="title-val-genInfo">{{#parsedData DATES.proposalDate}}
+                  {{DATES.proposalDate}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+                <p class="title-val-genInfo">{{#parsedData PARSE_XML.XML.Order.Head.CONTACT_ADDRESS3._text}}
+                  {{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS3._text}}
+                  {{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS4._text}}
+                  {{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS5._text}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <div class="company-info">
+              <div class="left">
+                <p class="title">Company:</p>
+                <p class="title">Name:</p>
+                <p class="title">Address:</p>
+              </div>
+              <div class="right">
+                <p class="title-val-genInfo">{{#parsedData PARSE_XML.XML.Order.Head.INFO2._text}}
+                  {{PARSE_XML.XML.Order.Head.INFO2._text}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+                <p class="title-val-genInfo">{{#parsedData PARSE_XML.XML.Order.Head.INFO1._text}}
+                  {{PARSE_XML.XML.Order.Head.INFO1._text}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+                <p class="title-val-genInfo">{{#parsedData PARSE_XML.XML.Order.Head.INFO3._text}}
+                  {{PARSE_XML.XML.Order.Head.INFO3._text}}
+                  {{PARSE_XML.XML.Order.Head.INFO4._text}}
+                  {{PARSE_XML.XML.Order.Head.INFO5._text}}
+                  {{else}}
+                  --
+                  {{/parsedData}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="sub-container">
+        <div class="heading room-summary">
+          <img src="https://test-designcafe.s3.ap-south-1.amazonaws.com/pdf-images/completedIcon.png" width="50"
+            height="50" alt="completed" />
+
+          <h2>ROOM SUMMARY</h2>
+        </div>
+        <p class="title">Description</p>
+        <p>{{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS2._text}}</p>
+        <div class="summary-table">
+          <table>
+            <caption>payment breakdown</caption>
+            <tr>
+              <th class="heading-pos">Pos.</th>
+              <th class="heading-qty">Quantity</th>
+              <th class="heading-price">Price</th>
+              <th class="heading-article">Article</th>
+              <th class="heading-sum">Sum</th>
+            </tr>
+            {{#each ROOMS}}
+            <tr class="table-data">
+              <td>{{inc @index}}</td>
+              {{#quant totalQuantity}}
+              <td>{{totalQuantity}}</td>
+              {{else}}
+              <td>1</td>
+              {{/quant}}
+              <td>Rs {{roomPrice}}</td>
+              <td class="room-name">{{roomName}}</td>
+              <td>Rs {{roomPrice}}</td>
+            </tr>
+            {{/each}}
+          </table>
+        </div>
+        <div class="table-total">
+          <div class="left">
+            <hr />
+            <p class="title">Total articles:</p>
+            <hr />
+            {{#discount PRICE_PROPS.discountPercent}}
+            <p class="title">Discount({{PRICE_PROPS.discountPercent}}%):</p>
+            <p class="title">Discount Total:</p>
+            <hr />
+            {{else}}
+
+            {{/discount}}
+            {{#discount PRICE_PROPS.absoluteDiscount}}
+            <p class="title">Absolute Discount:</p>
+            <hr />
+            {{else}}
+
+            {{/discount}}
+            {{#pmFees PRICE_PROPS.pmFee}}
+            <p class="title discount">Project management & design fee(7%):</p>
+            <hr />
+            {{else}}
+
+            {{/pmFees}}
+            <p class="title discount">Sub Total:</p>
+            <hr />
+            <p class="title">GST 18%:</p>
+            <p class="title">Total:</p>
+            <hr />
+
+          </div>
+          <div class="right">
+            <hr />
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{sum}} {{/PRICE_PROPS}}
+            </p>
+            <hr />
+            {{#discount PRICE_PROPS.discountPercent}}
+            <!-- ₹ -->
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{discountAmount}} {{/PRICE_PROPS}}</p>
+            <p class="title-value">Rs -{{#PRICE_PROPS}} {{discountAmount}} {{/PRICE_PROPS}}</p>
+            <hr />
+            {{else}}
+
+            {{/discount}}
+            <!--  -->
+            {{#discount PRICE_PROPS.absoluteDiscount}}
+            <p class="title-value">Rs -{{#PRICE_PROPS}} {{absoluteDiscount}} {{/PRICE_PROPS}}</p>
+            <hr />
+            {{else}}
+
+            {{/discount}}
+            {{#pmFees PRICE_PROPS.pmFee}}
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{pmFee}} {{/PRICE_PROPS}}</p>
+            <hr />
+            {{else}}
+
+            {{/pmFees}}
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{subTotal}} {{/PRICE_PROPS}}</p>
+            <hr />
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{gst}} {{/PRICE_PROPS}}</p>
+            <p class="title-value">Rs {{#PRICE_PROPS}} {{finalTotal}} {{/PRICE_PROPS}}</p>
+            <hr />
+
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="sub-container">
+          <section>
+            <div class="heading">
+              <img src="https://test-designcafe.s3.ap-south-1.amazonaws.com/pdf-images/completedIcon.png" width="50"
+                height="50" alt="completed" />
+              <h2>DETAILED SUMMARY</h2>
+
+              <p class="title">Description</p>
+              <p>{{PARSE_XML.XML.Order.Head.CONTACT_ADDRESS2._text}}</p>
+            </div>
+          </section>
+          <div class="summary-table">
+            <table>
+              <caption>payment breakdown</caption>
+              <thead>
+                <tr>
+                  <th class="heading-pos">Pos.</th>
+                  <th class="heading-qty">Quantity</th>
+                  <th class="heading-price">Price</th>
+                  <th class="heading-article">Article</th>
+                  <th class="heading-sum">Sum</th>
+                </tr>
+              </thead>
+              {{#each ROOMS}}
+              <tr class="table-data room-component">
+                <td>{{inc @index}}</td>
+                {{#quant totalQuantity}}
+                <td>{{totalQuantity}}</td>
+                {{else}}
+                <td>1</td>
+                {{/quant}}
+                <td>Rs {{roomPrice}}</td>
+                <td class="room-name">{{roomName}}</td>
+                <td>Rs {{roomPrice}}</td>
+              </tr>
+              {{#each compData}}
+              <tr class="table-data">
+                <td class="rooms-component">{{componentIndex}}</td>
+                <td>
+                  {{#quant quantity}}
+                  <p style="vertical-align: top;text-align: center;">{{quantity}}</p>
+                  {{else}}
+                  <p style="vertical-align: top;text-align: center;">1</p>
+                  {{/quant}}
+                  <br>
+                  <img src="{{componentImage}}" class="component-image" alt="not found">
+                </td>
+                <td class="rooms-component">Rs {{componentCost}}</td>
+                <td class="rooms-component"><strong>{{componentName}}</strong>
+                  <br />
+                  {{description}}
+                </td>
+                {{#compCost totalCompCost}}
+                <td class="rooms-component">Rs {{totalCompCost}}</td>
+                {{else}}
+                <td class="rooms-component">Rs {{componentCost}}</td>
+                {{/compCost}}
+              </tr>
+              {{/each}}
+              {{/each}}
+            </table>
+          </div>
+          <div class="table-total">
+            <div class="left">
+              <hr />
+              <p class="title">Total articles:</p>
+              <hr />
+              {{#discount PRICE_PROPS.discountPercent}}
+              <p class="title discount">Discount({{#PRICE_PROPS}}{{discountPercent}}%{{/PRICE_PROPS}}):</p>
+              <p class="title discount">Discount Total:</p>
+              <hr />
+              {{else}}
+
+              {{/discount}}
+              {{#discount PRICE_PROPS.absoluteDiscount}}
+              <p class="title">Absolute Discount:</p>
+              <hr />
+              {{else}}
+
+              {{/discount}}
+              {{#pmFees PRICE_PROPS.pmFee}}
+              <p class="title discount">Project management & design fee (7%):</p>
+              <hr />
+              {{else}}
+
+              {{/pmFees}}
+              <p class="title discount">Sub Total:</p>
+              <hr />
+              <p class="title">GST 18%:</p>
+              <p class="title">Total:</p>
+              <hr />
+
+            </div>
+            <div class="right">
+              <hr />
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{sum}} {{/PRICE_PROPS}}
+              </p>
+              <hr />
+              {{#discount PRICE_PROPS.discountPercent}}
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{discountAmount}} {{/PRICE_PROPS}}</p>
+              <p class="title-value">Rs -{{#PRICE_PROPS}} {{discountAmount}} {{/PRICE_PROPS}}</p>
+              <hr />
+              {{else}}
+
+              {{/discount}}
+              <!--  -->
+              {{#discount PRICE_PROPS.absoluteDiscount}}
+              <p class="title-value">Rs -{{#PRICE_PROPS}} {{absoluteDiscount}} {{/PRICE_PROPS}}</p>
+              <hr />
+              {{else}}
+
+              {{/discount}}
+              {{#pmFees PRICE_PROPS.pmFee}}
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{pmFee}} {{/PRICE_PROPS}}</p>
+              <hr />
+              {{else}}
+
+              {{/pmFees}}
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{subTotal}} {{/PRICE_PROPS}}</p>
+              <hr />
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{gst}} {{/PRICE_PROPS}}</p>
+              <p class="title-value">Rs {{#PRICE_PROPS}} {{finalTotal}} {{/PRICE_PROPS}}</p>
+              <hr />
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="heading">
+          <h2>TERMS & CONDITIONS</h2>
+          <p>Please click on the link to read our terms and conditions:
+            <a href="https://customer.designcafe.com/terms-conditions">Link</a>
+          </p>
+
+        </div>
+        <div class="heading">
+          <h2>WARRANTY</h2>
+          <p>Please click on the link to download our warranty statement:
+            <a href="https://customer.designcafe.com/warranty">Link</a>
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+
+</html>

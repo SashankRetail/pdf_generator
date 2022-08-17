@@ -1,0 +1,1631 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_CONNECTION")
+}
+
+// postgres://fzrtqdhqyoqokd:3720a680db0cdf9f4b47a5a286e5f0bbbf34be8cff2e634ec80655eadeb8ffeb@ec2-52-30-133-191.eu-west-1.compute.amazonaws.com:5432/df8c1tahq2g54j?schema=revamp
+
+model dc_cities {
+  name                     String?               @db.VarChar(512)
+  status                   Boolean?
+  odoo_id                  String?               @db.VarChar(256)
+  created_at               DateTime?             @db.Timestamp(6)
+  updated_at               DateTime?             @db.Timestamp(6)
+  id                       Int                   @id @default(autoincrement())
+  cityhead                 Int?                  @unique
+  country                  String?               @db.VarChar
+  includepmfee             Boolean?
+  reportingmanager         Int?
+  planningcoordinatoremail String?               @db.VarChar
+  teams_city               dc_teams_city[]
+  users_city               dc_users_city[]
+  dc_experiencecenters     dc_experiencecenters?
+  dc_project               dc_projects?
+  users                    dc_users?             @relation(fields: [cityhead], references: [userid])
+}
+
+model dc_experiencecenters {
+  centerid                Int                          @id @default(autoincrement())
+  name                    String?                      @db.VarChar(512)
+  odoo_id                 String?                      @db.VarChar(256)
+  created_at              DateTime?                    @db.Timestamp(6)
+  updated_at              DateTime?                    @db.Timestamp(6)
+  ectype                  String?                      @db.VarChar(512)
+  address                 String?                      @db.VarChar
+  city                    Int?                         @unique
+  centerhead              Int?                         @unique
+  financeteamemail        String?                      @db.VarChar
+  cities                  dc_cities?                   @relation(fields: [city], references: [id])
+  users                   dc_users?                    @relation(fields: [centerhead], references: [userid])
+  dc_project              dc_projects?
+  team_experiencecenters  dc_teams_experiencecenters[]
+  users_experiencecenters dc_users_experiencecenters[]
+}
+
+model dc_role {
+  roleid       Int        @id @default(autoincrement())
+  role_name    String?    @db.VarChar(128)
+  status       Boolean
+  created_date DateTime   @db.Timestamp(6)
+  updated_at   DateTime?  @db.Timestamp(6)
+  user_role    dc_users[]
+}
+
+model dc_department {
+  departmentid    Int        @id @default(autoincrement())
+  name            String?    @db.VarChar(128)
+  status          Boolean
+  created_date    DateTime   @db.Timestamp(6)
+  updated_at      DateTime?  @db.Timestamp(6)
+  user_department dc_users[]
+  dc_teams        dc_teams?
+}
+
+model dc_teams {
+  name                   String?                      @db.VarChar(512)
+  teammailid             String?                      @db.VarChar(512)
+  reportingmanager       Int?                         @unique
+  teamlead               String?                      @db.VarChar(512)
+  department             String?                      @db.VarChar(512)
+  odoo_id                String?                      @db.VarChar(256)
+  create_at              DateTime?                    @db.Timestamp(6)
+  updated_at             DateTime?                    @db.Timestamp(6)
+  id                     Int                          @id @default(autoincrement())
+  teamsdepartment        Int?                         @unique
+  departments            dc_department?               @relation(fields: [teamsdepartment], references: [departmentid])
+  dc_project             dc_projects?
+  team_city              dc_teams_city[]
+  team_experiencecenters dc_teams_experiencecenters[]
+  team_users             dc_users_team[]
+  reportingmanageruser   dc_users?                    @relation("reportingmanager", fields: [reportingmanager], references: [userid])
+}
+
+model dc_profile {
+  profileid    Int        @id @default(autoincrement())
+  profile_name String?    @db.VarChar(128)
+  status       Boolean?
+  created_date DateTime?  @db.Timestamp(6)
+  updated_at   DateTime?  @db.Timestamp(6)
+  permissions  Json?      @db.Json
+  access_level Int?       @db.Integer
+  user_profile dc_users[]
+}
+
+model dc_teams_city {
+  id         Int        @id @default(autoincrement())
+  teamid     Int?
+  cityid     Int?
+  created_at DateTime   @db.Timestamp(6)
+  updated_at DateTime   @db.Timestamp(6)
+  city       dc_cities? @relation(fields: [cityid], references: [id])
+  team       dc_teams?  @relation(fields: [teamid], references: [id])
+}
+
+model dc_teams_experiencecenters {
+  id         Int                  @id @default(autoincrement())
+  teamid     Int?
+  centerid   Int
+  created_at DateTime             @db.Timestamp(6)
+  updated_at DateTime             @db.Timestamp(6)
+  center     dc_experiencecenters @relation(fields: [centerid], references: [centerid])
+  team       dc_teams?            @relation(fields: [teamid], references: [id])
+}
+
+model dc_login_history {
+  id         Int       @id @default(autoincrement())
+  entity_id  Int?
+  login_time DateTime? @db.Timestamp(6)
+  created_at DateTime  @db.Timestamp(6)
+  updated_at DateTime  @db.Timestamp(6)
+}
+
+model dc_users {
+  userid                    Int                          @id @default(autoincrement())
+  roleid                    Int?
+  empid                     String?                      @db.VarChar(256)
+  departmentid              Int?
+  salesforceimported        Boolean?
+  firstname                 String?                      @db.VarChar(512)
+  lastname                  String?                      @db.VarChar(512)
+  middlename                String?                      @db.VarChar(512)
+  username                  String?                      @db.VarChar(512)
+  phonenumber               String?                      @db.VarChar(512)
+  designcafeemail           String?                      @db.VarChar(512)
+  reportingmanager          Int?
+  salesforceuserid          String?                      @unique @db.VarChar(512)
+  isbetauser                Boolean?
+  profilepic                String?                      @db.VarChar(512)
+  lastlogindate             DateTime?                    @db.Timestamp(6)
+  created_at                DateTime                     @db.Timestamp(6)
+  updated_at                DateTime?                    @db.Timestamp(6)
+  logintoken                String?                      @db.VarChar(512)
+  profileid                 Int?
+  refreshtoken              String?                      @db.VarChar(512)
+  iseligibleforleadmeetings Boolean?
+  supportpaloperatorid      Int?
+  monthlytarget             Float?
+  profile                   dc_profile?                  @relation(fields: [profileid], references: [profileid])
+  department                dc_department?               @relation(fields: [departmentid], references: [departmentid])
+  role                      dc_role?                     @relation(fields: [roleid], references: [roleid])
+  project_designer          dc_projects?                 @relation("designer")
+  project_salesmanager      dc_projects?                 @relation("salesmanager")
+  project_chm               dc_projects?                 @relation("chm")
+  project_surveyexecutive   dc_projects?                 @relation("surveyexecutive")
+  team_reportingmanager     dc_teams?                    @relation("reportingmanager")
+  opportunity_designUser    opportunity?                 @relation("designerUser")
+  users_city                dc_users_city[]
+  users_experiencecenters   dc_users_experiencecenters[]
+  users_team                dc_users_team[]
+  dc_experiencecenters      dc_experiencecenters?
+  dc_cities                 dc_cities?
+  dc_attachments            dc_attachments?
+}
+
+model dc_users_city {
+  id         Int        @id @default(autoincrement())
+  userid     Int?
+  cityid     Int?
+  created_at DateTime   @db.Timestamp(6)
+  updated_at DateTime   @db.Timestamp(6)
+  city       dc_cities? @relation(fields: [cityid], references: [id])
+  user       dc_users?  @relation(fields: [userid], references: [userid])
+}
+
+model dc_users_experiencecenters {
+  id         Int                   @id @default(autoincrement())
+  userid     Int?
+  centerid   Int?
+  created_at DateTime              @db.Timestamp(6)
+  updated_at DateTime              @db.Timestamp(6)
+  center     dc_experiencecenters? @relation(fields: [centerid], references: [centerid])
+  user       dc_users?             @relation(fields: [userid], references: [userid])
+}
+
+model dc_users_team {
+  id         Int       @id @default(autoincrement())
+  userid     Int?
+  teamid     Int?
+  created_at DateTime  @db.Timestamp(6)
+  updated_at DateTime  @db.Timestamp(6)
+  team       dc_teams? @relation(fields: [teamid], references: [id])
+  user       dc_users? @relation(fields: [userid], references: [userid])
+}
+
+model dc_addresses {
+  addressid   Int          @id @default(autoincrement())
+  city        String?      @db.VarChar(25)
+  country     String?      @db.VarChar(25)
+  street      String?      @db.VarChar(100)
+  zip         String?      @db.VarChar(10)
+  state       String?      @db.VarChar(25)
+  addresstype Int?
+  customerid  Int?
+  projectid   Int?
+  customers   dc_customer? @relation(fields: [customerid], references: [customerid])
+}
+
+model dc_customer {
+  customerid               Int                 @id @default(autoincrement())
+  otp                      Int?
+  isotpused                Boolean?
+  firstname                String?             @db.VarChar(100)
+  lastname                 String?             @db.VarChar(100)
+  customeremail            String?             @db.VarChar(50)
+  customerphone            String?             @unique @db.VarChar(10)
+  salesforceid             String?             @db.VarChar(25)
+  pancardno                String?             @db.VarChar(25)
+  gstno                    String?             @db.VarChar(10)
+  odoocontactid            String?             @db.VarChar(10)
+  generatedotptimestamp    String?             @db.VarChar(50)
+  requirementform          Int?
+  requirementformuploaded  Boolean?
+  leadid                   Int?
+  lastlogindate            DateTime?           @db.Timestamp(6)
+  logintoken               String?             @db.VarChar
+  refreshtoken             String?             @db.VarChar
+  issalesforcemigrateddata Boolean?
+  issalesforceupdatedobj   Boolean?
+  supportpaloperatorid     Int?
+  currentaddress           Json?               @db.Json
+  opportunityid            String?             @db.VarChar(20)
+  projectaddress           Json?               @db.Json
+  bookingformpdf           String?             @db.VarChar
+  bookingformaccepted      Boolean?
+  bookingformaccepteddate  DateTime?           @db.Timestamp(6)
+  bookingformstatus        String?             @db.VarChar
+  cardstage                Json?               @db.Json
+  addresses                dc_addresses[]
+  dc_attachments           dc_attachments?
+  dc_change_request        dc_change_request[]
+  dc_project               dc_projects?
+  customertype             String?             @db.VarChar
+  i10ingsttreatment        String?             @db.VarChar
+  dsacategory              String?             @db.VarChar
+  region                   String?             @db.VarChar
+}
+
+model hcmeta {
+  id      Int     @id @default(autoincrement())
+  hcver   Int?
+  org_id  String? @db.VarChar(50)
+  details String?
+
+  @@map("_hcmeta")
+}
+
+model sf_event_log {
+  id           Int       @id @default(autoincrement())
+  table_name   String?   @db.VarChar(128)
+  action       String?   @db.VarChar(7)
+  synced_at    DateTime? @default(now()) @db.Timestamptz(6)
+  sf_timestamp DateTime? @db.Timestamptz(6)
+  sfid         String?   @db.VarChar(20)
+  record       String?
+  processed    Boolean?
+
+  @@index([table_name, synced_at], map: "idx__sf_event_log_comp_key")
+  @@index([sfid], map: "idx__sf_event_log_sfid")
+  @@map("_sf_event_log")
+}
+
+model trigger_log {
+  id           Int       @id @default(autoincrement())
+  txid         BigInt?
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  processed_at DateTime? @db.Timestamptz(6)
+  processed_tx BigInt?
+  state        String?   @db.VarChar(8)
+  action       String?   @db.VarChar(7)
+  table_name   String?   @db.VarChar(128)
+  record_id    Int?
+  sfid         String?   @db.VarChar(18)
+  old          String?
+  values       String?
+  sf_result    Int?
+  sf_message   String?
+
+  @@index([created_at], map: "_trigger_log_idx_created_at")
+  @@index([state, id], map: "_trigger_log_idx_state_id")
+  @@map("_trigger_log")
+}
+
+model trigger_log_archive {
+  id           Int       @id
+  txid         BigInt?
+  created_at   DateTime? @db.Timestamptz(6)
+  updated_at   DateTime? @db.Timestamptz(6)
+  processed_at DateTime? @db.Timestamptz(6)
+  processed_tx BigInt?
+  state        String?   @db.VarChar(8)
+  action       String?   @db.VarChar(7)
+  table_name   String?   @db.VarChar(128)
+  record_id    Int?
+  sfid         String?   @db.VarChar(18)
+  old          String?
+  values       String?
+  sf_result    Int?
+  sf_message   String?
+
+  @@index([created_at], map: "_trigger_log_archive_idx_created_at")
+  @@index([record_id], map: "_trigger_log_archive_idx_record_id")
+  @@map("_trigger_log_archive")
+}
+
+model account {
+  personmailingcountry         String?   @db.VarChar(80)
+  middlename                   String?   @db.VarChar(40)
+  personmailingcity            String?   @db.VarChar(40)
+  lastname                     String?   @db.VarChar(80)
+  personmailinglatitude        Float?
+  acc_email__c                 String?   @db.VarChar(80)
+  whatsapp_opt_in__c           Boolean?
+  personcontactid              String?   @db.VarChar(18)
+  billingcity                  String?   @db.VarChar(40)
+  shippingcity                 String?   @db.VarChar(40)
+  pan__c                       String?   @db.VarChar(10)
+  persondepartment             String?   @db.VarChar(80)
+  personemail                  String?   @db.VarChar(80)
+  billingcountrycode           String?   @db.VarChar(255)
+  shippingcountrycode           String?   @db.VarChar(255)
+  aadhar_card__c               String?   @db.VarChar(14)
+  gst_no__c                    String?   @db.VarChar(15)
+  name                         String?   @db.VarChar(255)
+  channel_marketing_manager__c String?   @db.VarChar(18)
+  channelprogramname           String?   @db.VarChar(255)
+  country_code__c              String?   @db.VarChar(40)
+  approvalstatus__c            String?   @db.VarChar(255)
+  channelprogramlevelname      String?   @db.VarChar(255)
+  personmailingpostalcode      String?   @db.VarChar(20)
+  isdeleted                    Boolean?
+  systemmodstamp               DateTime? @db.Timestamp(6)
+  opportunity_stage__c         String?   @db.VarChar(255)
+  dsa__c                       String?   @db.VarChar(18)
+  referee_code_dc__c           String?   @db.VarChar(30)
+  alternate_contact_number__c  String?   @db.VarChar(40)
+  createddate                  DateTime? @db.Timestamp(6)
+  billingstate                 String?   @db.VarChar(80)
+  shippingstate                String?   @db.VarChar(80)
+  accountnumber                String?   @db.VarChar(40)
+  personmobilephone            String?   @db.VarChar(40)
+  dsa_category__c              String?   @db.VarChar(255)
+  commission__c                Float?
+  personmailingstreet          String?   @db.VarChar(255)
+  personmailingstate           String?   @db.VarChar(80)
+  billingcountry               String?   @db.VarChar(80)
+  shippingcountry               String?   @db.VarChar(80)
+  firstname                    String?   @db.VarChar(40)
+  gst__c                       Float?
+  description                  String?
+  annualrevenue                Float?
+  billingpostalcode            String?
+  shippingpostalcode            String?
+  industry                     String?   @db.VarChar(255)
+  billingstreet                String?   @db.VarChar(255)
+  shippingstreet               String?   @db.VarChar(255)
+  sfid                         String?   @unique(map: "hcu_idx_account_sfid") @db.VarChar(18)
+  id                           Int       @id @default(autoincrement())
+  hc_lastop                    String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                       String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_account_systemmodstamp")
+}
+
+/// This model has been renamed to 'Renamedcase' during introspection, because the original name 'case' is reserved.
+model Renamedcase {
+  chm_name__c                                              String?   @db.VarChar(255)
+  contactmobile                                            String?   @db.VarChar(40)
+  knowlarity_cti__lead__r__mobile_number_external_field__c String?   @db.VarChar(255)
+  designer_name__c                                         String?   @db.VarChar(255)
+  priority                                                 String?   @db.VarChar(255)
+  reason                                                   String?   @db.VarChar(255)
+  origin                                                   String?   @db.VarChar(255)
+  accountid                                                String?   @db.VarChar(18)
+  suppliedname                                             String?   @db.VarChar(80)
+  businesshoursid                                          String?   @db.VarChar(18)
+  project__c                                               String?   @db.VarChar(18)
+  assetid                                                  String?   @db.VarChar(18)
+  subject                                                  String?   @db.VarChar(255)
+  contactphone                                             String?   @db.VarChar(40)
+  masterrecordid                                           String?   @db.VarChar(18)
+  isdeleted                                                Boolean?
+  systemmodstamp                                           DateTime? @db.Timestamp(6)
+  suppliedphone                                            String?   @db.VarChar(40)
+  isclosedoncreate                                         Boolean?
+  status                                                   String?   @db.VarChar(255)
+  knowlarity_cti__lead__c                                  String?   @db.VarChar(18)
+  comments                                                 String?   @db.VarChar(4000)
+  createddate                                              DateTime? @db.Timestamp(6)
+  isclosed                                                 Boolean?
+  language                                                 String?   @db.VarChar(255)
+  casenumber                                               String?   @db.VarChar(30)
+  type                                                     String?   @db.VarChar(255)
+  closeddate                                               DateTime? @db.Timestamp(6)
+  contactid                                                String?   @db.VarChar(18)
+  knowlarity_cti__complaint_category__c                    String?   @db.VarChar(255)
+  contactemail                                             String?   @db.VarChar(80)
+  description                                              String?
+  contactfax                                               String?   @db.VarChar(40)
+  suppliedemail                                            String?   @db.VarChar(80)
+  chm_email__c                                             String?   @db.VarChar(80)
+  suppliedcompany                                          String?   @db.VarChar(80)
+  sfid                                                     String?   @unique(map: "hcu_idx_case_sfid") @db.VarChar(18)
+  id                                                       Int       @id @default(autoincrement())
+  hc_lastop                                                String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                                                   String?   @map("_hc_err")
+
+  @@index([knowlarity_cti__lead__c], map: "hc_idx_case_knowlarity_cti__lead__c")
+  @@index([systemmodstamp], map: "hc_idx_case_systemmodstamp")
+  @@map("case")
+}
+
+model casecomment {
+  createddate    DateTime? @db.Timestamp(6)
+  isdeleted      Boolean?
+  systemmodstamp DateTime? @db.Timestamp(6)
+  commentbody    String?   @db.VarChar(4000)
+  parentid       String?   @db.VarChar(18)
+  sfid           String?   @unique(map: "hcu_idx_casecomment_sfid") @db.VarChar(18)
+  id             Int       @id @default(autoincrement())
+  hc_lastop      String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err         String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_casecomment_systemmodstamp")
+}
+
+model commission__c {
+  dsaname__c                 String?   @db.VarChar(18)
+  tdsless__c                 Float?
+  name                       String?   @db.VarChar(80)
+  isdeleted                  Boolean?
+  payment_at_5_milestone__c  Float?
+  opportunity__c             String?   @db.VarChar(18)
+  systemmodstamp             DateTime? @db.Timestamp(6)
+  project_name__c            String?   @db.VarChar(18)
+  createddate                DateTime? @db.Timestamp(6)
+  commission__c              Float?
+  dsaemail__c                String?   @db.VarChar(80)
+  customername__c            String?   @db.VarChar(18)
+  gst__c                     Float?
+  payment_at_35_milestone__c Float?
+  sfid                       String?   @unique(map: "hcu_idx_commission__c_sfid") @db.VarChar(18)
+  id                         Int       @id @default(autoincrement())
+  hc_lastop                  String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                     String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_commission__c_systemmodstamp")
+}
+
+model contact {
+  middlename             String?   @db.VarChar(40)
+  lastname               String?   @db.VarChar(80)
+  mailingpostalcode      String?   @db.VarChar(20)
+  mailinglongitude       Float?
+  mailingstate           String?   @db.VarChar(80)
+  accountid              String?   @db.VarChar(18)
+  mailingcountry         String?   @db.VarChar(80)
+  name                   String?   @db.VarChar(121)
+  mailinggeocodeaccuracy String?   @db.VarChar(255)
+  mobilephone            String?   @db.VarChar(40)
+  mailingstreet          String?   @db.VarChar(255)
+  isdeleted              Boolean?
+  systemmodstamp         DateTime? @db.Timestamp(6)
+  mailingstatecode       String?   @db.VarChar(255)
+  createddate            DateTime? @db.Timestamp(6)
+  mailingcity            String?   @db.VarChar(40)
+  mailinglatitude        Float?
+  email                  String?   @db.VarChar(80)
+  sfid                   String?   @unique(map: "hcu_idx_contact_sfid") @db.VarChar(18)
+  id                     Int       @id @default(autoincrement())
+  hc_lastop              String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                 String?   @map("_hc_err")
+  mailingcountrycode     String?   @db.VarChar(255)
+
+  @@index([systemmodstamp], map: "hc_idx_contact_systemmodstamp")
+}
+
+model contentversion {
+  createddate       DateTime? @db.Timestamp(6)
+  isdeleted         Boolean?
+  systemmodstamp    DateTime? @db.Timestamp(6)
+  contentdocumentid String?   @db.VarChar(18)
+  title             String?   @db.VarChar(255)
+  versiondata       Bytes?
+  sfid              String?   @unique(map: "hcu_idx_contentversion_sfid") @db.VarChar(18)
+  id                Int       @id @default(autoincrement())
+  hc_lastop         String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err            String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_contentversion_systemmodstamp")
+}
+
+model design_user__c {
+  mobile__c                String?   @db.VarChar(40)
+  email__c                 String?   @db.VarChar(80)
+  designer_dashboard_id__c String?   @db.VarChar(255)
+  name                     String?   @db.VarChar(80)
+  salutation__c            String?   @db.VarChar(255)
+  role__c                  String?   @db.VarChar(255)
+  region__c                String?   @db.VarChar(255)
+  isdeleted                Boolean?
+  systemmodstamp           DateTime? @db.Timestamp(6)
+  designusernumber__c      String?   @db.VarChar(30)
+  designer_team__c         String?   @db.VarChar(255)
+  createddate              DateTime? @db.Timestamp(6)
+  experience_center__c     String?   @db.VarChar(255)
+  active__c                Boolean?
+  sfid                     String?   @unique(map: "hcu_idx_design_user__c_sfid") @db.VarChar(18)
+  id                       Int       @id @default(autoincrement())
+  hc_lastop                String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                   String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_design_user__c_systemmodstamp")
+}
+
+model feedcomment {
+  commentbody           String?
+  parentid              String?   @db.VarChar(18)
+  threadchildrencount   Int?
+  threadlastupdateddate DateTime? @db.Timestamp(6)
+  feeditemid            String?   @db.VarChar(18)
+  isdeleted             Boolean?
+  threadparentid        String?   @db.VarChar(18)
+  systemmodstamp        DateTime? @db.Timestamp(6)
+  status                String?   @db.VarChar(255)
+  isrichtext            Boolean?
+  createddate           DateTime? @db.Timestamp(6)
+  relatedrecordid       String?   @db.VarChar(18)
+  commenttype           String?   @db.VarChar(255)
+  threadlevel           Int?
+  revision              Int?
+  sfid                  String?   @unique(map: "hcu_idx_feedcomment_sfid") @db.VarChar(18)
+  id                    Int       @id @default(autoincrement())
+  hc_lastop             String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_feedcomment_systemmodstamp")
+}
+
+model invoice__c {
+  invoice_date__c          DateTime? @db.Date
+  designer_name__c         String?   @db.VarChar(1300)
+  invoicepdflink__c        String?   @db.VarChar(255)
+  customer__c              String?   @db.VarChar(18)
+  invoice_number__c        String?   @db.VarChar(255)
+  customerid__c            String?   @db.VarChar(255)
+  due_date__c              DateTime? @db.Date
+  project__c               String?   @db.VarChar(18)
+  amount__c                Float?
+  is_attachment__c         Boolean?
+  name                     String?   @db.VarChar(80)
+  sgst__c                  Float?
+  isdeleted                Boolean?
+  payment_link__c          String?   @db.VarChar(255)
+  opportunity__c           String?   @db.VarChar(18)
+  systemmodstamp           DateTime? @db.Timestamp(6)
+  total_amount__c          Float?
+  invoicepdflink1__c       String?   @db.VarChar(255)
+  project_name__c          String?   @db.VarChar(255)
+  milestone__c             String?   @db.VarChar(18)
+  virtual_id__c            String?   @db.VarChar(255)
+  shipping_charges__c      Float?
+  createddate              DateTime? @db.Timestamp(6)
+  account__c               String?   @db.VarChar(18)
+  tax_amount__c            String?   @db.VarChar(255)
+  amount_s__c              String?   @db.VarChar(255)
+  designer_email__c        String?   @db.VarChar(80)
+  friendly_payment_link__c String?   @db.VarChar(1300)
+  terms__c                 String?   @db.VarChar(255)
+  total_tax_amount__c      Float?
+  igst18__c                Float?
+  base_amount__c           Float?
+  cgst__c                  Float?
+  payment_name__c          String?   @db.VarChar(255)
+  sfid                     String?   @unique(map: "hcu_idx_invoice__c_sfid") @db.VarChar(18)
+  id                       Int       @id @default(autoincrement())
+  hc_lastop                String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                   String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_invoice__c_systemmodstamp")
+}
+
+model invoice_payment__c {
+  payment_confirmation_status__c String?   @db.VarChar(255)
+  request_payment_modular__c     String?   @db.VarChar(18)
+  paymentid__c                   String?   @db.VarChar(50)
+  invoice_1__c                   String?   @db.VarChar(18)
+  invoice_name__c                String?   @db.VarChar(255)
+  rp_recipt_id__c                String?   @db.VarChar(255)
+  modular_value__c               Float?
+  name                           String?   @db.VarChar(80)
+  opportunity_name__c            String?   @db.VarChar(18)
+  isdeleted                      Boolean?
+  systemmodstamp                 DateTime? @db.Timestamp(6)
+  payment_receipt_url__c         String?   @db.VarChar(255)
+  date_of_payment__c             DateTime? @db.Date
+  site_service_value__c          Float?
+  createddate                    DateTime? @db.Timestamp(6)
+  mode_of_receipt__c             String?   @db.VarChar(255)
+  mserv_invoice_numer__c         String?   @db.VarChar(255)
+  request_payment_siteservice__c String?   @db.VarChar(18)
+  sfid                           String?   @unique(map: "hcu_idx_invoice_payment__c_sfid") @db.VarChar(18)
+  id                             Int       @id @default(autoincrement())
+  hc_lastop                      String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                         String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_invoice_payment__c_systemmodstamp")
+}
+
+model lead {
+  partneraccountid                           String?   @db.VarChar(18)
+  age_of_second_kid__c                       String?   @db.VarChar(255)
+  middlename                                 String?   @db.VarChar(40)
+  lastname                                   String?   @db.VarChar(80)
+  if_other_languages_please_specify__c       String?   @db.VarChar(255)
+  countrycode                                String?   @db.VarChar(255)
+  designer_name__c                           String?   @db.VarChar(1300)
+  propertyaddress__c                         String?   @db.VarChar(1300)
+  meeting_type__c                            String?   @db.VarChar(255)
+  who_will_be_staying_in_the_house__c        String?   @db.VarChar(4099)
+  interior_work_needed_for__c                String?   @db.VarChar(4099)
+  dc_lead_source__c                          String?   @db.VarChar(255)
+  design_user_name__c                        String?   @db.VarChar(1300)
+  others_for_live__c                         String?   @db.VarChar(255)
+  civil_work__c                              Boolean?
+  call_stage__c                              String?   @db.VarChar(255)
+  how_many_kids_do_you_have__c               String?   @db.VarChar(255)
+  convertedcontactid                         String?   @db.VarChar(18)
+  which_language_are_you_most_comfortable__c String?   @db.VarChar(255)
+  dsa_code__c                                String?   @db.VarChar(25)
+  when_would_you_like_to_have_the_home__c    String?   @db.VarChar(255)
+  designer_team_name__c                      String?   @db.VarChar(255)
+  rejected_by__c                             String?   @db.VarChar(255)
+  eat__c                                     String?   @db.VarChar(4099)
+  name                                       String?   @db.VarChar(121)
+  mobilephone                                String?   @db.VarChar(40)
+  do_you_have_pets__c                        String?   @db.VarChar(255)
+  property_usage__c                          String?   @db.VarChar(4099)
+  has_designer_accepted__c                   String?   @db.VarChar(255)
+  where_are_you_currently_located__c         String?   @db.VarChar(255)
+  phone                                      String?   @db.VarChar(40)
+  dc_lead_status__c                          String?   @db.VarChar(255)
+  play__c                                    String?   @db.VarChar(4099)
+  region__c                                  String?   @db.VarChar(255)
+  isdeleted                                  Boolean?
+  systemmodstamp                             DateTime? @db.Timestamp(6)
+  dsa__c                                     String?   @db.VarChar(18)
+  status                                     String?   @db.VarChar(255)
+  work__c                                    String?   @db.VarChar(255)
+  broadcast_status__c                        String?   @db.VarChar(1)
+  age_of_first_kid__c                        String?   @db.VarChar(255)
+  dsa_email__c                               String?   @db.VarChar(80)
+  scope_of_work__c                           String?   @db.VarChar(4099)
+  willingness_for_meeting__c                 DateTime? @db.Timestamp(6)
+  gender_of_first_kid__c                     String?   @db.VarChar(255)
+  area__c                                    String?   @db.VarChar(255)
+  alternate_contact_number__c                String?   @db.VarChar(40)
+  createddate                                DateTime? @db.Timestamp(6)
+  convertedaccountid                         String?   @db.VarChar(18)
+  country                                    String?   @db.VarChar(80)
+  design_user__c                             String?   @db.VarChar(18)
+  live__c                                    String?   @db.VarChar(4099)
+  meeting_venue__c                           String?   @db.VarChar(255)
+  designer__c                                String?   @db.VarChar(18)
+  gender_of_fourth_kid__c                    String?   @db.VarChar(255)
+  dc_home_visit__c                           String?   @db.VarChar(255)
+  dsa_category__c                            String?   @db.VarChar(255)
+  property_address__c                        String?   @db.VarChar(255)
+  approx_budget__c                           String?   @db.VarChar(255)
+  dc_campaign_source__c                      String?   @db.VarChar(255)
+  age_of_fourth_kid__c                       String?   @db.VarChar(255)
+  firstname                                  String?   @db.VarChar(40)
+  estimate__c                                String?   @db.VarChar(255)
+  partner__c                                 String?   @db.VarChar(18)
+  cmm_name__c                                String?   @db.VarChar(255)
+  convertedopportunityid                     String?   @db.VarChar(18)
+  email                                      String?   @db.VarChar(80)
+  description                                String?
+  agent_code__c                              String?   @db.VarChar(255)
+  company                                    String?   @db.VarChar(255)
+  others_for_play__c                         String?   @db.VarChar(255)
+  requirement_details__c                     String?   @db.VarChar(4099)
+  annualrevenue                              Float?
+  age_of_third_kid__c                        String?   @db.VarChar(255)
+  agency__c                                  String?   @db.VarChar(255)
+  gender_of_second_kid__c                    String?   @db.VarChar(255)
+  gender_of_third_kid__c                     String?   @db.VarChar(255)
+  property_type__c                           String?   @db.VarChar(255)
+  sfid                                       String?   @unique(map: "hcu_idx_lead_sfid") @db.VarChar(18)
+  id                                         Int       @id @default(autoincrement())
+  hc_lastop                                  String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                                     String?   @map("_hc_err")
+  lead_owner_name__c                         String?   @db.VarChar(1300)
+  client_s_budget__c                         Float?
+  mobile_number_external_field__c            String?   @db.VarChar(255)
+  country_code__c                            String?   @db.VarChar(40)
+  home_type__c                               String?   @db.VarChar(4099)
+  site_service_needed_for__c                 String?   @db.VarChar(4099)
+  floor_plan_attachment_id__c                String?   @db.VarChar(255)
+  ownerid                                    String?   @db.VarChar(18)
+  lead_owner_mobile__c                       String?   @db.VarChar(1300)
+  lead_owner_email__c                        String?   @db.VarChar(1300)
+
+  @@index([systemmodstamp], map: "hc_idx_lead_systemmodstamp")
+}
+
+model milestone1_milestone__c {
+  is_accepted_by_customer__c                String?   @db.VarChar(255)
+  mom_accepted_by_customer__c               String?   @db.VarChar(255)
+  milestone_template_predecessorsfid__c     String?   @db.VarChar(20)
+  importid__c                               String?   @db.VarChar(18)
+  actual_completion_date__c                 DateTime? @db.Timestamp(6)
+  actual_expense_from_sub_milestones__c     Float?
+  customer_contact__c                       String?   @db.VarChar(18)
+  milestone_template_successorsfid__c       String?   @db.VarChar(20)
+  late_tasks_in_tasks__c                    Float?
+  customer__c                               String?   @db.VarChar(18)
+  relative_deadline_in_days__c              Float?
+  milestone_template_prev_payment_sfid__c   String?   @db.VarChar(20)
+  kyc_meeting_date__c                       DateTime? @db.Date
+  description__c                            String?   @db.VarChar(5000)
+  parent_milestone__c                       String?   @db.VarChar(18)
+  predecessor_milestone__c                  String?   @db.VarChar(18)
+  type__c                                   String?   @db.VarChar(255)
+  complete__c                               Boolean?
+  project__c                                String?   @db.VarChar(18)
+  dsa_name__c                               String?   @db.VarChar(255)
+  collectable_amount_percent_before_this__c Float?
+  milestonetemplatesfid__c                  String?   @db.VarChar(255)
+  blocked_tasks_in_sub_milestones__c        Float?
+  name                                      String?   @db.VarChar(80)
+  deadline__c                               DateTime? @db.Date
+  successor_milestone__c                    String?   @db.VarChar(18)
+  open_tasks_in_sub_milestones__c           Float?
+  okay_to_reparent__c                       Boolean?
+  actual_hours_from_sub_milestones__c       Float?
+  milestone_level__c                        String?   @db.VarChar(255)
+  hours_budget__c                           Float?
+  isdeleted                                 Boolean?
+  systemmodstamp                            DateTime? @db.Timestamp(6)
+  late_tasks_in_sub_milestones__c           Float?
+  status__c                                 String?   @db.VarChar(255)
+  alias__c                                  String?   @db.VarChar(10)
+  predecessor_milestone_import_id__c        String?   @db.VarChar(18)
+  customer_s_email__c                       String?   @db.VarChar(80)
+  previous_payment_milestone__c             String?   @db.VarChar(18)
+  dsa_email__c                              String?   @db.VarChar(80)
+  order__c                                  Float?
+  hours_budget_from_sub_milestones__c       Float?
+  packages__c                               String?   @db.VarChar(255)
+  createddate                               DateTime? @db.Timestamp(6)
+  emt_cmm_email__c                          String?   @db.VarChar(80)
+  estimated_expense_from_sub_milestones__c  Float?
+  expense_budget__c                         Float?
+  assign_to__c                              String?   @db.VarChar(18)
+  designer__c                               String?   @db.VarChar(18)
+  mom__c                                    String?
+  assign_to_role__c                         String?   @db.VarChar(255)
+  relative_kickoff_date_in_days__c          Float?
+  kickoff__c                                DateTime? @db.Date
+  eligibleamountpercentage__c               Float?
+  cmm_name__c                               String?   @db.VarChar(35)
+  expense_budget_from_sub_milestones__c     Float?
+  estimated_hours_from_sub_milestones__c    Float?
+  sfid                                      String?   @unique(map: "hcu_idx_milestone1_milestone__c_sfid") @db.VarChar(18)
+  id                                        Int       @id @default(autoincrement())
+  hc_lastop                                 String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                                    String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_milestone1_milestone__c_systemmodstamp")
+}
+
+model milestone1_project__c {
+  survey_executive__c                     String?   @db.VarChar(18)
+  cmm__c                                  String?   @db.VarChar(1300)
+  strict_project__c                       String?   @db.VarChar(255)
+  total_blocked_task_count__c             Float?
+  handover__c                             Boolean?
+  offers_and_discounts__c                 String?   @db.VarChar(4099)
+  projecttemplatesfid__c                  String?   @db.VarChar(255)
+  x3d_team_manager__c                     String?   @db.VarChar(18)
+  kyc_completed__c                        Boolean?
+  project_accepted_by_designer__c         String?   @db.VarChar(255)
+  total_hours_incurred__c                 Float?
+  total_expense_budget_from_milestones__c Float?
+  importid__c                             String?   @db.VarChar(18)
+  total_complete_task_count__c            Float?
+  actual_completion_date__c               DateTime? @db.Date
+  project_type__c                         String?   @db.VarChar(255)
+  on__c                                   Boolean?
+  signup_amount__c                        Float?
+  design_finalization_date__c             DateTime? @db.Timestamp(6)
+  customer__c                             String?   @db.VarChar(18)
+  x3d_shell_designer_assigned__c          String?   @db.VarChar(255)
+  x3d_presentation_date__c                DateTime? @db.Timestamp(6)
+  number_of_incomplete_top_milestones__c  Float?
+  description__c                          String?   @db.VarChar(5000)
+  production_started__c                   Boolean?
+  quip_document_template_url__c           String?   @db.VarChar(255)
+  next_project_milestone_due_date__c      DateTime? @db.Date
+  pc_assigned__c                          Boolean?
+  project_group__c                        String?   @db.VarChar(255)
+  is_bulk_upload__c                       Boolean?
+  reason_for_rejection__c                 String?   @db.VarChar(255)
+  kyc_date__c                             DateTime? @db.Timestamp(6)
+  amount__c                               Float?
+  total_expense_incurred__c               Float?
+  name                                    String?   @db.VarChar(80)
+  deadline__c                             DateTime? @db.Date
+  survey_status__c                        String?   @db.VarChar(255)
+  number_of_complete_milestones__c        Float?
+  enquiry_id__c                           String?   @db.VarChar(255)
+  ownerid                                 String?   @db.VarChar(18)
+  chm_team__c                             String?   @db.VarChar(255)
+  region__c                               String?   @db.VarChar(255)
+  production_started_change__c            DateTime? @db.Timestamp(6)
+  isdeleted                               Boolean?
+  total_hours_estimate__c                 Float?
+  opportunity__c                          String?   @db.VarChar(18)
+  systemmodstamp                          DateTime? @db.Timestamp(6)
+  total_late_task_count__c                Float?
+  customer_s_contact__c                   String?   @db.VarChar(1300)
+  completed_on__c                         DateTime? @db.Date
+  default_template_project__c             Boolean?
+  number_of_incomplete_milestones__c      Float?
+  pb_commission_name__c                   String?   @db.VarChar(18)
+  status__c                               String?   @db.VarChar(255)
+  updated_num_temp__c                     Float?
+  designer_team__c                        String?   @db.VarChar(255)
+  total_hours_budget__c                   Float?
+  virtual_account_number__c               String?   @db.VarChar(18)
+  customer_s_email__c                     String?   @db.VarChar(80)
+  total_open_task_count__c                Float?
+  project_number__c                       String?   @db.VarChar(30)
+  is_qc_approved__c                       String?   @db.VarChar(255)
+  planning_coordinator__c                 Boolean?
+  googlegannturl__c                       String?
+  project_address__c                      String?   @db.VarChar(1300)
+  is_migrated__c                          Boolean?
+  is_project_good_for_construction__c     Boolean?
+  packages__c                             String?   @db.VarChar(255)
+  is_designer_assigned__c                 String?   @db.VarChar(255)
+  createddate                             DateTime? @db.Timestamp(6)
+  gfc_status__c                           Boolean?
+  project_duration_in_days__c             Float?
+  x3d_designer_assigned__c                String?   @db.VarChar(255)
+  design_team_name__c                     String?   @db.VarChar(255)
+  handover_change__c                      DateTime? @db.Timestamp(6)
+  designer__c                             String?   @db.VarChar(18)
+  current_milestone__c                    String?   @db.VarChar(255)
+  total_expense_estimate__c               Float?
+  quality_check_status__c                 String?   @db.VarChar(255)
+  total_hours_budget_from_milestones__c   Float?
+  kickoff__c                              DateTime? @db.Date
+  current_milestone_stage__c              String?   @db.VarChar(255)
+  kickoff_meeting_date__c                 DateTime? @db.Timestamp(6)
+  chm__c                                  String?   @db.VarChar(18)
+  project_milestone_status__c             String?   @db.VarChar(255)
+  first_cut_presentation_date__c          DateTime? @db.Timestamp(6)
+  project_manager__c                      String?   @db.VarChar(18)
+  total_expense_budget__c                 Float?
+  x3d_team_member__c                      String?   @db.VarChar(18)
+  survey_completed__c                     Boolean?
+  project_manager_assigned__c             String?   @db.VarChar(255)
+  chm_assigned__c                         Boolean?
+  payment_stage__c                        String?   @db.VarChar(255)
+  next_project_top_milestone_due_date__c  DateTime? @db.Date
+  sfid                                    String?   @unique(map: "hcu_idx_milestone1_project__c_sfid") @db.VarChar(18)
+  id                                      Int       @id @default(autoincrement())
+  hc_lastop                               String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                                  String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_milestone1_project__c_systemmodstamp")
+}
+
+model opportunity {
+  frames_for_all_external_doors_windows__c   Boolean?
+  mobile__c                                  String?   @db.VarChar(1300)
+  notes__c                                   String?
+  wohoo_card__c                              String?   @db.VarChar(16)
+  expectedrevenue                            Float?
+  flooring_is_completed_required__c          Boolean?
+  signup_amount__c                           Float?
+  meeting_type__c                            String?   @db.VarChar(255)
+  opportunity_status__c                      String?   @db.VarChar(255)
+  interior_work_needed_for__c                String?   @db.VarChar(4099)
+  proposed_budget__c                         Float?
+  design_user_name__c                        String?   @db.VarChar(1300)
+  lead_id__c                                 String?   @db.VarChar(255)
+  team__c                                    String?   @db.VarChar(1300)
+  closedate                                  DateTime? @db.Date
+  customer_id__c                             String?   @db.VarChar(1300)
+  payment_mode__c                            String?   @db.VarChar(255)
+  email__c                                   String?   @db.VarChar(1300)
+  accountid                                  String?   @db.VarChar(18)
+  modular_amount_dis_incl_gst__c             Float?
+  dsa_code__c                                String?   @db.VarChar(255)
+  stagename                                  String?   @db.VarChar(255)
+  home_type__c                               String?   @db.VarChar(4099)
+  source_customer_id__c                      String?   @db.VarChar(255)
+  name                                       String?   @db.VarChar(120)
+  iswon                                      Boolean?
+  modular_discount__c                        Float?
+  ownerid                                    String?   @db.VarChar(18)
+  region__c                                  String?   @db.VarChar(255)
+  is_pm_site__c                              Boolean?
+  isdeleted                                  Boolean?
+  systemmodstamp                             DateTime? @db.Timestamp(6)
+  all_walls_are_completed_required__c        Boolean?
+  dsa__c                                     String?   @db.VarChar(18)
+  index__c                                   String?   @db.VarChar(30)
+  project_name__c                            String?   @db.VarChar(255)
+  designeremail__c                           String?   @db.VarChar(1300)
+  scope_of_work__c                           String?   @db.VarChar(4099)
+  phone__c                                   String?   @db.VarChar(40)
+  createddate                                DateTime? @db.Timestamp(6)
+  civil_discount__c                          Float?
+  isclosed                                   Boolean?
+  design_user__c                             String?   @unique @db.VarChar(18)
+  amount                                     Float?
+  salesmanagername__c                        String?
+  initial_payment__c                         Float?
+  if_the_required_part_is_checked_the_co__c  String?   @db.VarChar(255)
+  meeting_venue__c                           String?   @db.VarChar(255)
+  designer__c                                String?   @db.VarChar(18)
+  floors_are_levelled_out_prepped_basic__c   Boolean?
+  property_address__c                        String?   @db.VarChar(255)
+  approx_budget__c                           String?   @db.VarChar(255)
+  isnewpaymentproject__c                     Boolean?
+  proposal_sent_date__c                      DateTime? @db.Date
+  contactid                                  String?   @db.VarChar(18)
+  partner__c                                 String?   @db.VarChar(18)
+  offer_and_discounts__c                     String?   @db.VarChar(4099)
+  cmm_name__c                                String?   @db.VarChar(255)
+  description                                String?
+  putty_and_1_coat_of_plastering_required__c Boolean?
+  requirement_details__c                     String?   @db.VarChar(4099)
+  site_services_amount_dis_incl_gst__c       Float?
+  client_s_budget__c                         Float?
+  decor_amount_incl_gst__c                   Float?
+  is_quote_created__c                        Boolean?
+  update_booking_form__c                     Boolean?
+  civil_work__c                              Boolean?
+  the_doors_windows_are_installed_requir__c  Boolean?
+  remarks_for_marketing__c                   String?
+  sfid                                       String?   @unique(map: "hcu_idx_opportunity_sfid") @db.VarChar(18)
+  id                                         Int       @id @default(autoincrement())
+  hc_lastop                                  String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                                     String?   @map("_hc_err")
+  studio_name__c                             String?   @db.VarChar(255)
+  designerUser                               dc_users? @relation("designerUser", fields: [design_user__c], references: [salesforceuserid])
+
+  @@index([systemmodstamp], map: "hc_idx_opportunity_systemmodstamp")
+}
+
+model opportunity_invoice__c {
+  initial_amount_incl_gst__c Float?
+  total_tax_value__c         Float?
+  invoice_date__c            DateTime? @db.Date
+  igst__c                    Float?
+  rp_invoice_number__c       String?   @db.VarChar(255)
+  customer_email__c          String?   @db.VarChar(80)
+  invoice_pdf_link__c        String?   @db.VarChar(255)
+  name                       String?   @db.VarChar(80)
+  isdeleted                  Boolean?
+  payment_link__c            String?   @db.VarChar(255)
+  opportunity__c             String?   @db.VarChar(18)
+  systemmodstamp             DateTime? @db.Timestamp(6)
+  createddate                DateTime? @db.Timestamp(6)
+  amount_excl_gst__c         Float?
+  cgst__c                    Float?
+  rp_invoice_receipt__c      String?   @db.VarChar(255)
+  payment_name__c            String?   @db.VarChar(225)
+  sfid                       String?   @unique(map: "hcu_idx_opportunity_invoice__c_sfid") @db.VarChar(18)
+  id                         Int       @id @default(autoincrement())
+  hc_lastop                  String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                     String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_opportunity_invoice__c_systemmodstamp")
+}
+
+model payment__c {
+  mode__c                       String?   @db.VarChar(255)
+  paymentid__c                  String?   @db.VarChar(255)
+  payment_receipt__c            String?   @db.VarChar(255)
+  customer__c                   String?   @db.VarChar(18)
+  transactionid__c              String?   @db.VarChar(255)
+  amount__c                     Float?
+  invoicename__c                String?   @db.VarChar(255)
+  name                          String?   @db.VarChar(80)
+  paymentreceiveddate__c        DateTime? @db.Date
+  isdeleted                     Boolean?
+  systemmodstamp                DateTime? @db.Timestamp(6)
+  payment_received_date__c      DateTime? @db.Timestamp(6)
+  milestone__c                  String?   @db.VarChar(18)
+  revenue_milestone_category__c String?   @db.VarChar(255)
+  invoice__c                    String?   @db.VarChar(18)
+  createddate                   DateTime? @db.Timestamp(6)
+  payment_date__c               DateTime? @db.Date
+  amountpaid__c                 Float?
+  sfid                          String?   @unique(map: "hcu_idx_payment__c_sfid") @db.VarChar(18)
+  id                            Int       @id @default(autoincrement())
+  hc_lastop                     String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                        String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_payment__c_systemmodstamp")
+}
+
+model quote {
+  quotetogeocodeaccuracy               String?   @db.VarChar(255)
+  discount                             Float?
+  shippinglongitude                    Float?
+  quotetocity                          String?   @db.VarChar(40)
+  modular_fixed_discount__c            Float?
+  quotetoname                          String?   @db.VarChar(255)
+  site_services_amount__c              Float?
+  billingstatecode                     String?   @db.VarChar(255)
+  shippingstate                        String?   @db.VarChar(80)
+  quotetolatitude                      Float?
+  igst__c                              Float?
+  subtotal                             Float?
+  totalprice                           Float?
+  quotenumber                          String?   @db.VarChar(30)
+  site_services_pm_design_fee__c       Float?
+  site_services_amount_discounted__c   Float?
+  shippingpostalcode                   String?   @db.VarChar(20)
+  billingcity                          String?   @db.VarChar(40)
+  quote_link__c                        String?   @db.VarChar(255)
+  billingname                          String?   @db.VarChar(255)
+  quotetostatecode                     String?   @db.VarChar(255)
+  billinglatitude                      Float?
+  accountid                            String?   @db.VarChar(18)
+  additionallongitude                  Float?
+  billingcountrycode                   String?   @db.VarChar(255)
+  shippingcountry                      String?   @db.VarChar(80)
+  customer_email__c                    String?   @db.VarChar(1300)
+  decor_amount_gst__c                  Float?
+  shippinggeocodeaccuracy              String?   @db.VarChar(255)
+  modular_amount_dis_incl_gst__c       Float?
+  additionalstate                      String?   @db.VarChar(80)
+  additionalstreet                     String?   @db.VarChar(255)
+  name                                 String?   @db.VarChar(255)
+  tax                                  Float?
+  quotetocountrycode                   String?   @db.VarChar(255)
+  modular_discount__c                  Float?
+  contractid                           String?   @db.VarChar(18)
+  modular_amount_gst__c                Float?
+  sgst__c                              Float?
+  phone                                String?   @db.VarChar(40)
+  oppty_designer_email_add__c          String?   @db.VarChar(80)
+  site_services_amount_incl_gst__c     Float?
+  opportunityid                        String?   @db.VarChar(18)
+  decor_amount_dis_incl_gst__c         Float?
+  additionalcountry                    String?   @db.VarChar(80)
+  quotetopostalcode                    String?   @db.VarChar(20)
+  isdeleted                            Boolean?
+  additionalgeocodeaccuracy            String?   @db.VarChar(255)
+  systemmodstamp                       DateTime? @db.Timestamp(6)
+  total_amount__c                      Float?
+  shippingstatecode                    String?   @db.VarChar(255)
+  modular_amount_discounted__c         Float?
+  decor_amount__c                      Float?
+  modular_pm_design_fee__c             Float?
+  shippingstreet                       String?   @db.VarChar(255)
+  status                               String?   @db.VarChar(255)
+  additionalcity                       String?   @db.VarChar(40)
+  additionalname                       String?   @db.VarChar(255)
+  designeremail__c                     String?   @db.VarChar(1300)
+  shippinghandling                     Float?
+  additionallatitude                   Float?
+  billingpostalcode                    String?   @db.VarChar(20)
+  billinglongitude                     Float?
+  site_service_fixed_discount__c       Float?
+  decor_amount_discount__c             Float?
+  shippingcountrycode                  String?   @db.VarChar(255)
+  decor_amount_discounted__c           Float?
+  modular_amount__c                    Float?
+  createddate                          DateTime? @db.Timestamp(6)
+  billingstate                         String?   @db.VarChar(80)
+  additionalstatecode                  String?   @db.VarChar(255)
+  customer_name__c                     String?   @db.VarChar(1300)
+  quotetolongitude                     Float?
+  grandtotal                           Float?
+  shippingcity                         String?   @db.VarChar(40)
+  shippingname                         String?   @db.VarChar(255)
+  site_services_amount_gst__c          Float?
+  site_services_discount__c            Float?
+  shippinglatitude                     Float?
+  site_services_pdf__c                 String?   @db.VarChar(255)
+  quotetostate                         String?   @db.VarChar(80)
+  quotetostreet                        String?   @db.VarChar(255)
+  modular_amount_incl_gst__c           Float?
+  pricebook2id                         String?   @db.VarChar(18)
+  billingcountry                       String?   @db.VarChar(80)
+  contactid                            String?   @db.VarChar(18)
+  oppty_owner__c                       String?   @db.VarChar(18)
+  email                                String?   @db.VarChar(80)
+  description                          String?
+  additionalcountrycode                String?   @db.VarChar(255)
+  billinggeocodeaccuracy               String?   @db.VarChar(255)
+  oppty_customer_email__c              String?   @db.VarChar(80)
+  base_amount__c                       Float?
+  issyncing                            Boolean?
+  fax                                  String?   @db.VarChar(40)
+  expirationdate                       DateTime? @db.Date
+  site_services_amount_dis_incl_gst__c Float?
+  proposal_pdf__c                      String?   @db.VarChar(255)
+  cgst__c                              Float?
+  send_notification_to_customer__c     Boolean?
+  is_imos_project__c                   Boolean?
+  billingstreet                        String?   @db.VarChar(255)
+  additionalpostalcode                 String?   @db.VarChar(20)
+  quotetocountry                       String?   @db.VarChar(80)
+  latest_quote__c                      Boolean?
+  opportunity_owner__c                 String?
+  opportunity_amount__c                Float?
+  decor_amount_incl_gst__c             Float?
+  total_calculated_value__c            Float?
+  dc_room_list__c                      String?
+  postgres_id__c                       String?   @unique
+  change_request_list__c               String?
+  dc_modular_xml__c                    String?   @db.VarChar(255)
+  dc_site_services_xml__c              String?   @db.VarChar(255)
+  sfid                                 String?   @unique(map: "hcu_idx_quote_sfid") @db.VarChar(18)
+  id                                   Int       @id @default(autoincrement())
+  hc_lastop                            String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err                               String?   @map("_hc_err")
+
+  @@index([systemmodstamp], map: "hc_idx_quote_systemmodstamp")
+}
+
+model user {
+  portalrole      String?   @db.VarChar(255)
+  profileid       String?   @db.VarChar(18)
+  aboutme         String?   @db.VarChar(1000)
+  team__c         String?   @db.VarChar(4099)
+  name            String?   @db.VarChar(121)
+  fullphotourl    String?   @db.VarChar(1024)
+  mobilephone     String?   @db.VarChar(40)
+  phone           String?   @db.VarChar(40)
+  region__c       String?   @db.VarChar(4099)
+  systemmodstamp  DateTime? @db.Timestamp(6)
+  state           String?   @db.VarChar(80)
+  createddate     DateTime? @db.Timestamp(6)
+  userrolename__c String?   @db.VarChar(1300)
+  email           String?   @db.VarChar(128)
+  userroleid      String?   @db.VarChar(18)
+  sfid            String?   @unique(map: "hcu_idx_user_sfid") @db.VarChar(18)
+  id              Int       @id @default(autoincrement())
+  hc_lastop       String?   @map("_hc_lastop") @db.VarChar(32)
+  hc_err          String?   @map("_hc_err")
+  smallphotourl   String?   @db.VarChar(1024)
+  mediumphotourl  String?   @db.VarChar(1024)
+
+  @@index([systemmodstamp], map: "hc_idx_user_systemmodstamp")
+}
+
+model dc_requirement_form {
+  id                     Int       @id @default(autoincrement())
+  user                   Int?
+  created_at             DateTime? @db.Timestamp(6)
+  updated_at             DateTime? @db.Timestamp(6)
+  leadid                 Int?
+  requirementformdetails Json?     @db.Json
+}
+
+model dc_application {
+  id           Int       @id @default(autoincrement())
+  clientid     String?   @db.VarChar
+  clientsecret String?   @db.VarChar
+  role         String?   @db.VarChar
+  createdat    DateTime? @db.Date
+  updatedat    DateTime? @db.Date
+}
+
+model dc_attachments {
+  id            Int              @id(map: "id") @default(autoincrement())
+  filekey       String           @db.VarChar
+  contenttype   String           @db.VarChar
+  location      String           @unique @db.VarChar
+  user          Int?             @unique
+  customer      Int?             @unique
+  ispreorpost   Int?
+  leadid        String?          @db.VarChar
+  displayname   String?          @db.VarChar
+  momid         Int?
+  commentid     Int?
+  opportunityid String?          @db.VarChar
+  created_at    DateTime?        @db.Timestamp(6)
+  userid        dc_users?        @relation(fields: [user], references: [userid])
+  customerid    dc_customer?     @relation(fields: [customer], references: [customerid])
+  mom           dc_project_mom?  @relation(fields: [momid], references: [id])
+  comment       dc_mom_comments? @relation(fields: [commentid], references: [id])
+}
+
+model dc_change_request {
+  id           Int          @id @default(autoincrement())
+  projectid    Int?
+  request_type String       @db.VarChar(18)
+  description  String       @db.VarChar(512)
+  stage        String       @db.VarChar(18)
+  created_at   DateTime     @db.Timestamp(6)
+  updated_at   DateTime?    @db.Timestamp(6)
+  quoteid      Int?
+  quotesfid    String?
+  customerid   Int?
+  customer     dc_customer? @relation(fields: [customerid], references: [customerid])
+  dc_projects  dc_projects? @relation(fields: [projectid], references: [id])
+}
+
+model dc_mom_comments {
+  id             Int              @id(map: "dc-mom_comments_pkey") @default(autoincrement())
+  momid          Int?
+  commentdetails String?          @db.VarChar
+  addedby        String?          @db.VarChar
+  deletedby      String?          @db.VarChar
+  createdate     DateTime?        @db.Timestamp(6)
+  deleteddate    DateTime?        @db.Timestamp(6)
+  isshow         Boolean?
+  updatedate     DateTime?        @db.Timestamp(6)
+  projectMom     dc_project_mom?  @relation(fields: [momid], references: [id])
+  attachments    dc_attachments[]
+}
+
+model request_payment__c {
+  id                Int     @id @default(autoincrement())
+  category__c       String? @db.VarChar
+  request_amount__c Float?
+  description__c    String? @db.VarChar
+  request_id__c     String? @db.VarChar
+  client_id__c      String? @db.VarChar
+  status__c         String? @db.VarChar
+  opportunity__c    String? @db.VarChar
+}
+
+model dc_odoocookie {
+  id     Int     @id @default(autoincrement())
+  cookie String? @db.VarChar
+}
+
+model dc_paymentreceipts {
+  id                       Int       @id @default(autoincrement())
+  issalesforcemigrateddata Boolean?
+  amountpaid               Float?
+  paymentid                String?   @db.VarChar(512)
+  paymentmode              String?   @db.VarChar(512)
+  paymentreceiveddate      String?   @db.VarChar(512)
+  transactionid            String?   @db.VarChar(512)
+  createdat                DateTime? @db.Timestamp(6)
+  updatedat                DateTime? @db.Timestamp(6)
+  paymentreceipt           String?   @db.VarChar(512)
+  invoice                  String?   @db.VarChar(512)
+  projectid                String?   @db.VarChar(512)
+  xrazorpayeventid         String?   @db.VarChar(512)
+  paymentrequests          Json?     @db.Json
+  status                   String?   @db.VarChar(512)
+  modularamount            Float?
+  siteservicesamount       Float?
+  clientid                 String?   @db.VarChar(512)
+  receivedamount           Float?
+  paymentrequest           Json?     @db.Json
+  additionalcharges        Int?
+  siteserviceamount        Float?
+  description              String?   @db.VarChar(512)
+  linkid                   String?   @db.VarChar(512)
+  orderid                  String?   @db.VarChar(512)
+  paymentrealizationstatus String?   @db.VarChar(512)
+  appname                  String?   @db.VarChar(512)
+  salesforcedbid           String?   @db.VarChar(512)
+  odoo_payment_id          Int?
+  reason_for_rejection     String?   @db.VarChar
+  paymentmillestoneid      Int?
+  paymentname              String?   @db.VarChar()
+}
+
+model dc_paymentrequests {
+  id                   Int       @id @default(autoincrement())
+  appname              Json?     @db.Json
+  requestid            String?   @db.VarChar(512)
+  requestdate          String?   @db.VarChar(512)
+  category             String?   @db.VarChar(512)
+  requestamount        Float?
+  description          String?   @db.VarChar(512)
+  clientid             String?   @db.VarChar(512)
+  status               String?   @db.VarChar(512)
+  createdat            DateTime? @db.Timestamp(6)
+  updatedat            DateTime? @db.Timestamp(6)
+  paymentid            String?   @db.VarChar(512)
+  paymentreceiveddate  String?   @db.VarChar(512)
+  razorpay_refernce_id String?   @db.VarChar
+  razorpay_payment_id  String?   @db.VarChar
+  razorpay_short_url   String?   @db.VarChar
+}
+
+model dc_project_mom {
+  id                 Int               @id(map: "dc_mom_pkey") @default(autoincrement())
+  projectid          Int?
+  milestoneid        Int?
+  designerid         Int?
+  meetingname        String?           @db.VarChar
+  meetingagenda      String?           @db.VarChar
+  meetingdescription String?           @db.VarChar
+  meetingdate        DateTime?         @db.Date
+  status             String?           @db.VarChar
+  sentondate         DateTime?         @db.Timestamp(6)
+  momComments        dc_mom_comments[]
+  attachments        dc_attachments[]
+}
+
+model dc_project_quotes {
+  id                          Int      @id @default(autoincrement())
+  quotename                   String?  @db.VarChar(512)
+  modularvalue                Float?
+  siteservice                 Float?
+  modulardiscount             Int?
+  modularabsolutediscount     Int?
+  siteserviceabsolutediscount Int?
+  siteservicediscount         Int?
+  islatestquote               Boolean?
+  modularxml                  String?  @db.VarChar(512)
+  salesforcequoteid           String?  @db.VarChar(512)
+  opportunityid               String?  @db.VarChar(512)
+  roomlist                    Json?
+  proposalpdf                 String?  @db.VarChar(512)
+  modularpdflocation          String?  @db.VarChar(512)
+  decorvalue                  Float?
+  siteservicexml              String?  @db.VarChar(512)
+  siteservicepdflocation      String?  @db.VarChar(512)
+  addoncostingpdf             String?  @db.VarChar(512)
+  customername                String?  @db.VarChar(512)
+  isimosproject               Boolean?
+  rooms_ids                   Json?
+}
+
+model dc_projects {
+  id                                   Int                   @id @default(autoincrement())
+  projectid                            String?               @unique @db.VarChar(512)
+  projectname                          String?               @db.VarChar(512)
+  projectstatus                        String?               @db.VarChar(512)
+  signoffstatus                        String?               @db.VarChar
+  projectvalue                         Float?
+  createdate                           DateTime?             @db.Date
+  updatedate                           DateTime?             @db.Date
+  signupdate                           DateTime?             @db.Date
+  customerid                           Int?                  @unique
+  designerid                           Int?                  @unique
+  salesmanagerid                       Int?                  @unique
+  salesmanagername                     String?
+  chmid                                Int?                  @unique
+  surveyexecutiveid                    Int?                  @unique
+  designstudioid                       Int?                  @unique
+  modularbaseamount                    Float?
+  modularvalue                         Float?
+  modulardiscount                      Float?
+  siteservicebaseamount                Float?
+  siteservicevalue                     Float?
+  siteservicediscount                  Float?
+  modularpmfee                         Float?
+  sitepmfee                            Float?
+  signupamount                         Float?
+  signupstate                          String?               @db.VarChar
+  experiencecenterid                   Int?                  @unique
+  cityid                               Int?                  @unique
+  projectaddressid                     Int?
+  cmmname                              String?               @db.VarChar
+  expectedhandoverdate                 DateTime?             @db.Date
+  currentmilestone                     String?               @db.VarChar
+  projectphase                         String?               @db.VarChar
+  hasdesigneraccepted                  Boolean?
+  hasdesigerresponded                  Boolean?
+  hometype                             String?               @db.VarChar
+  initialsignupvalue                   Float?
+  decorvalue                           Float?
+  addonvalue                           Float?
+  totalprojectvalue                    Float?
+  achievedrevenuevalue                 Float?
+  quoteid                              Int?                  @unique
+  projectrating                        Int?
+  includepmfee                         Boolean?
+  milestonetype                        String?               @db.VarChar
+  odooid                               String?               @db.VarChar
+  odoo_delivery_address_id             String?               @db.VarChar
+  isnewpaymentproject                  Boolean?
+  template                             String?               @db.VarChar
+  clientid                             String?               @db.VarChar
+  projectdecorvalue                    Float?
+  projectmodularvalue                  Float?
+  projectsiteservicesvalue             Float?
+  pendingamountvalue                   Float?
+  modularabsolutediscount              Int?
+  siteserviceabsolutediscount          Int?
+  milestones                           Json?                 @db.Json
+  opportunityid                        String?               @db.VarChar(255)
+  paymentrequests                      Json?                 @db.Json
+  siteaddress                          String?
+  valuebeforediscount                  Float?
+  isimosproject                        Boolean?
+  iscustomersignoffrequired            Boolean?
+  modular_collected_amount             Float?
+  site_services_collected_amount       Float?
+  imosrooms                            Json?
+  haslift                              Boolean?
+  hasfalseceiling                      Boolean?
+  scopeforelectricalwork               Boolean?
+  projecttype                          String?
+  tentativeprojectdurationaftersignoff String?
+  scopeofwork                          String?
+  specialfinishes                      String?
+  floorarea                            Int?
+  paymentmilestonelist                 Json?                 @db.Json
+  modularamountgst                     Int?
+  siteservicegst                       Int?
+  siteserviceamountgst                 Float?
+  siteservicepdflink                   String?
+  modularamountgstvalue                Float?
+  siteservicediscountvalue             Float?
+  quotelink                            String?
+  proposalpdflink                      String?
+  isimos                               Boolean?
+  modularinvoicedamount                Float?
+  siteserviceinvoicedamount            Float?
+  dc_change_request                    dc_change_request[]
+  customer                             dc_customer?          @relation(fields: [customerid], references: [customerid])
+  experiencecenter                     dc_experiencecenters? @relation(fields: [experiencecenterid], references: [centerid])
+  designstudio                         dc_teams?             @relation(fields: [designstudioid], references: [id])
+  city                                 dc_cities?            @relation(fields: [cityid], references: [id])
+  designer                             dc_users?             @relation("designer", fields: [designerid], references: [userid])
+  salesmanager                         dc_users?             @relation("salesmanager", fields: [salesmanagerid], references: [userid])
+  chm                                  dc_users?             @relation("chm", fields: [chmid], references: [userid])
+  surveyexecutive                      dc_users?             @relation("surveyexecutive", fields: [surveyexecutiveid], references: [userid])
+  smartsheetid                         String?               @db.VarChar
+  projectdelay                         String?               @db.VarChar
+  projectmanagername                   String?               @db.VarChar
+  projectmanager                       String?
+  lastupdatedate                       DateTime?             @db.Date
+}
+
+model dc_tickets {
+  id         Int       @id @default(autoincrement())
+  ticketid   Int?
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+}
+
+model dc_odooinvoice {
+  id                       Int       @id @default(autoincrement())
+  invoicenumber            String?   @db.VarChar(512)
+  invoiceid                String?   @db.VarChar(512)
+  clientid                 String?   @db.VarChar(512)
+  invoicedate              String?   @db.VarChar(512)
+  invoiceamount            Int?
+  invoicepdf               String?   @db.VarChar(512)
+  milestone                String?   @db.VarChar(512)
+  category                 String?   @db.VarChar(512)
+  currentprojectvalue      Int?
+  currentmodularvalue      Int?
+  currentsiteservicesvalue Int?
+  baseamount               Int?
+  additionalcharge         Int?
+  igst                     Int?
+  cgst                     Int?
+  sgst                     Int?
+  totaltax                 Int?
+  status                   String?   @db.VarChar(512)
+  createdat                DateTime? @db.Date
+  updatedat                DateTime? @db.Date
+  odooinvoiceid            Int?
+  project                  Json?     @db.Json
+}
+
+model dc_paymentmilestone {
+  id                        Int       @id
+  status                    String?   @db.VarChar(512)
+  totalpayableamount        Float?
+  advanceamount             Float?
+  amountpaid                Float?
+  siteserviceamount         Float?
+  amountdue                 Float?
+  freezedmodular            Float?
+  freezedsiteservice        Float?
+  isfreezed                 Boolean?
+  milestonename             String?   @db.VarChar
+  modularamount             Float?
+  paymentvalue              String?   @db.VarChar
+  duedate                   DateTime? @db.Date
+  sequence                  Int?
+  projectid                 Int?
+  createdat                 DateTime? @db.Date
+  updatedat                 DateTime? @db.Date
+  invoicebaseamount         Float?
+  invoicedate               String?   @db.VarChar
+  invoicenumber             String?   @db.VarChar(512)
+  invoicetotalamount        Float?
+  invoicetotalcgstaxamount  Float?
+  invoicetotaligsttaxamount Float?
+  invoicetotalsgsttaxamount Float?
+  invoicetotaltaxamount     Float?
+  addonamount               Float?
+  invoiceurl                String?   @db.VarChar(512)
+  paymentlink               String?   @db.VarChar(512)
+  milestonesfid             String?   @db.VarChar(512)
+  paymentlinkid             String?   @db.VarChar(512)
+  rpayorderid               String?   @db.VarChar(512)
+  receiptid                 String?   @db.VarChar(512)
+  paymentid                 String?   @db.VarChar(512)
+}
+
+model dc_esignoffs {
+  id                     Int       @id
+  signoffstatus          Int?
+  customerfeedback       Json?     @db.Json
+  displayname            String?   @db.VarChar(512)
+  filename               String?   @db.VarChar(512)
+  projectphasestatus     Int?
+  projectid              String?   @db.VarChar(512)
+  customerid             String?   @db.VarChar(512)
+  createdat              DateTime? @db.Timestamp(6)
+  updatedat              DateTime? @db.Timestamp(6)
+  awsfilekey             String?   @db.VarChar(512)
+  customersigneddocument String?   @db.VarChar(512)
+  feedbackdescription    String?   @db.VarChar(512)
+  fileurl                String?   @db.VarChar(512)
+  uploadedby             String?   @db.VarChar(512)
+  uploadedtimestamp      DateTime? @db.Timestamp(6)
+  reviewedtimestamp      DateTime? @db.Timestamp(6)
+  rejectedbecause        Json?     @db.Json
+  name                   String?   @db.VarChar(512)
+  key                    String?   @db.VarChar(512)
+  location               String?   @db.VarChar(512)
+  uploadeddate           DateTime? @db.Timestamp(6)
+  accepteddate           DateTime? @db.Timestamp(6)
+  rejecteddate           DateTime? @db.Timestamp(6)
+  isnewproject           Boolean?
+}
+
+model dc_invoices {
+  id                         Int       @id
+  reciepts                   Json?     @db.Json
+  invoicenumber              String?   @db.VarChar(512)
+  paymentname                String?   @db.VarChar(512)
+  paymentstatus              String?   @db.VarChar(512)
+  date                       String?   @db.VarChar(512)
+  experiencecenter           String?   @db.VarChar(512)
+  milestonependingdue        Float?
+  amount                     Float?
+  amountpaid                 Float?
+  amountdue                  Float?
+  invoicepdf                 String?   @db.VarChar(512)
+  paymentlinkid              String?   @db.VarChar(512)
+  paymentlink                String?   @db.VarChar(512)
+  receiptid                  String?   @db.VarChar(512)
+  createdat                  DateTime? @db.Timestamp(6)
+  updatedat                  DateTime? @db.Timestamp(6)
+  rpayorderid                String?   @db.VarChar(512)
+  paymentreceipts            Json?     @db.Json
+  issalesforcemigrateddata   Boolean?
+  extrapayments              Json?     @db.Json
+  project                    String?   @db.VarChar(512)
+  advanceamount              Float?
+  projectid                  String?   @db.VarChar(512)
+  isregenerated              Boolean?
+  projectmodularvalue        Float?
+  projectsiteservicesvalue   Float?
+  projectdecorvalue          Float?
+  invalidatedafterregenerate Boolean?
+  studioname                 String?   @db.VarChar(512)
+  invoiceid                  String?   @db.VarChar(512)
+  requeststatus              String?   @db.VarChar(512)
+  invoiceamount              Int?
+  milestone                  String?   @db.VarChar(512)
+  category                   String?   @db.VarChar(512)
+  projectstatus              String?   @db.VarChar(512)
+  projectvalue               Float?
+  salesforcedbid             String?   @db.VarChar(512)
+  inv_created_date           DateTime? @db.Date
+}
+
+model dc_receiptnumbers {
+  id                   Int       @id
+  experiencecentercode String?   @db.VarChar(512)
+  year                 String?   @db.VarChar(512)
+  month                String?   @db.VarChar(512)
+  sequencenumber       Int?
+  createdat            DateTime? @db.Timestamp(6)
+  updatedat            DateTime? @db.Timestamp(6)
+}
+
+model dc_companies {
+  id                Int       @id
+  legalname         String?   @db.VarChar(512)
+  companycode       String?   @db.VarChar(512)
+  companycodename   String?   @db.VarChar(512)
+  gstin             String?   @db.VarChar(512)
+  cin               String?   @db.VarChar(512)
+  registeredaddress Json?     @db.Json
+  createdat         DateTime? @db.Timestamp(6)
+  updatedat         DateTime? @db.Timestamp(6)
+}
+
+model dc_invoicepdfhtmls {
+  id             Int       @id
+  invoicenumber  String?   @db.VarChar(512)
+  createdat      DateTime? @db.Timestamp(6)
+  invoicepdfhtml String?   @db.VarChar(8192)
+  updatedat      DateTime? @db.Timestamp(6)
+}
+
+model dc_roundrobin {
+  roundrobinid       Int @id @default(autoincrement())
+  teamid             Int @db.Integer
+  experiencecenterid Int @db.Integer
+}
+
+model dc_surveyroundrobin {
+  roundrobinid       Int @id @default(autoincrement())
+  surveyexecutiveid  Int
+  experiencecenterid Int
+}

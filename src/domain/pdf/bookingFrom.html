@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    br {
+      height: 4px;
+    }
+
+    td,
+    tr,
+    th {
+      padding: 5px;
+      border-width: 1px;
+      border-collapse: collapse;
+      border-style: solid;
+    }
+h2{
+  font-size: 20px;
+}
+    div.seperationBar {
+      background-color: #C59962;
+      height: 1px;
+    }
+
+    div.bookingForm {
+      color: #ffffff;
+      position: absolute;
+      background-color: #069AA7;
+      border-radius: 0px 0px 150px 0px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 24px;
+      padding: 14px;
+      width: 517px;
+    }
+
+    div.relative {
+      position: relative;
+      margin-top: 20px;
+    }
+
+    div.absolute {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    span.leftAttribute {
+      color: #257A7E;
+    }
+
+    div.absolutePanGst {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 50%
+    }
+
+    div.address {
+      position: absolute;
+      left:38%;
+      top: 0;
+      width: 50%
+    }
+
+    div.absolutePaymentFirst {
+      position: absolute;
+      left: 38%;
+      top: 0px;
+    }
+
+    div.absolutePaymentSecond {
+      position: absolute;
+      left: 66%;
+      top: 35;
+
+    }
+
+    span.red {
+      color: #EF0909;
+      font-weight: bold;
+    }
+
+    span.blue {
+      color: #0C00FF;
+      font-weight: bold;
+    }
+
+    div.Notes {
+      padding: 8px;
+      background-color: #e9e7e7;
+      margin-left: 15px;
+    }
+
+    div.signBackground {
+      background-color: #F8D234;
+      padding: 22px;
+      position: relative;
+    }
+
+    div.representative {
+      position: absolute;
+      top: 11px;
+    }
+
+    div.clientSign {
+      position: absolute;
+      top: 11px;
+      left: 400px;
+    }
+  </style>
+</head>
+
+<body style="font-size: 15; font-family: Verdana, Geneva, Tahoma, sans-serif;background-color: #F7FAFB;">
+  <div class="bookingForm"><strong>Booking Form</strong></div><br /><br /><br /><br />
+  <div class="relative" style="font-weight: bold;">
+    <div style="color: #C59962;">DC Code: {{{dcCode}}}</div>
+
+    <div class="absolute" style="text-align: right; font-weight: bold;">
+      Date: {{{closeDate}}}
+    </div><br />
+  </div>
+  <div class="relative">
+    <span class="leftAttribute">Client Name: </span>{{{clientName}}}<br /><br />
+    <span class="leftAttribute">Contact Number: </span>{{{phoneNumber}}}<br /><br />
+    <span class="leftAttribute">Email ID: </span>{{{emailId}}}<br />
+    <div class="absolutePanGst">
+      <span class="leftAttribute">PAN: </span><span>{{{pan}}}</span><br /><br />
+      <span class="leftAttribute">GST: </span><span>{{{gst}}}</span>
+    </div>
+  </div><br />
+  <div class="seperationBar"></div>
+  <h2 style="margin-bottom: 2px;">Project Details</h2>
+  <div class="relative">
+    <span class="leftAttribute">Project type: </span>{{{projectType}}}<br /><br />
+    <span class="leftAttribute">Scope of work: </span>{{{scopeOfWork}}}<br /><br />
+    <span class="leftAttribute">Civil work required: </span>{{#if civilWorkRequired}} Yes {{else}} No
+    {{/if}}<br /><br />
+    <span class="leftAttribute">Project address: </span>{{#with projectAddress}} {{street}} {{city}}
+    {{shippingState}} {{country}} {{zipOrPostalCode}}  {{/with}} <br /><br />
+    <span class="leftAttribute">Current address: </span>{{#with currentAddress}} {{street}} {{city}}
+    {{shippingState}} {{country}} {{zipOrPostalCode}}  {{/with}} <br /><br />
+  </div>
+  <div class="seperationBar"></div>
+  <h2 style="margin-bottom: 2px;">Payment Details</h2>
+  <div class="relative">
+    <span class="leftAttribute">Proposed value: </span> {{#if proposedValue}}
+    {{{proposedValue}}}{{else}} -
+    {{/if}}<br /><br />
+    <span class="leftAttribute">Modular amount: </span> {{#if modularAmount}} {{{modularAmount}}}
+    {{else}}
+    -{{/if}}<br /> <br />
+    <span class="leftAttribute">Modular discount: </span> {{#if modularDiscount}}
+    {{{modularDiscount}}}%{{else}}
+    - {{/if}}<br /><br />
+    <span class="leftAttribute">Signup value: </span> {{#if signupValue}} {{{signupValue}}}{{else}} -
+    {{/if}}<br /><br />
+    <div class="absolutePaymentFirst">
+      <span class="leftAttribute">Siteservice amount: </span> {{#if siteServicesAmount}}
+      {{{siteServicesAmount}}}{{else}} - {{/if}}<br /><br />
+      <span class="leftAttribute">Siteservice discount: </span> {{#if siteServicesDiscount}}
+      {{{siteServicesDiscount}}}%{{else}} - {{/if}}<br /><br />
+      <span class="leftAttribute">Advance: </span> {{#if signupAmount}} {{{signupAmount}}}{{else}} -
+      {{/if}}<br /><br />
+    </div>
+  </div>
+  <div class="seperationBar"></div>
+
+  <h2 style="margin-bottom: 20px;">Site Readiness</h2>
+
+  Frames for all external Doors and Windows are fixed (Basic):{{#if basicFramesofExternalDoorsAndWindows}} <span
+    class="blue"> YES</span> {{else}} <span class="red"> NO</span> {{/if}}<br />
+  The Doors and Windows are installed (Required):{{#if reqdDoorsAndWindowsInstalled}} <span class="blue"> YES</span>
+  {{else}} <span class="red"> NO</span> {{/if}}<br />
+  All walls are completed (Basic):{{#if basicAllWallsCompleted}} <span class="blue"> YES</span> {{else}} <span
+    class="red"> NO</span> {{/if}}<br />
+  Putty and 1 coat of plastering is completed on all walls (Required):{{#if reqdPuttyCoatOfPlasteringOnWalls}} <span
+    class="blue"> YES</span> {{else}} <span class="red"> NO</span> {{/if}}<br />
+  Floors are leveled out and prepped for material:{{#if basicFloorsLeveledOutAndPrepped}} <span class="blue"> YES</span>
+  {{else}} <span class="red"> NO</span> {{/if}}<br />
+  Flooring is completed (Required):{{#if reqdFlooringIsCompleted}} <span class="blue"> YES</span> {{else}} <span
+    class="red"> NO</span> {{/if}}<br /><br />
+  <div class="seperationBar" style="margin-bottom: 5px;margin-top: 5px;"></div>
+  Remarks from sales:
+  <div class="notes" style="margin-bottom: 5px;">{{#if remarkFromSales}} {{{remarkFromSales}}} {{else}} - {{/if}}</div>
+
+  <div class="signBackground">
+    <div class="representative">
+     <strong> DC Representative: </strong>{{{salesManagerName}}}
+    </div>
+    <div class="clientSign">
+     <strong> Client Sign: </strong>  {{{clientName}}}
+    </div>
+  </div>
+</body>
+
+</html>
